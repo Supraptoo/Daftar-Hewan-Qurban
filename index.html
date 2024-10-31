@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pendaftaran Hewan Kurban</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #4cb6b8;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+      header {
+        background-color: #0fbd52;
+        color: #000;
+        padding: 20px;
+        text-align: center;
+        animation: fadeIn 1s;
+        font-weight: bold;
+      }
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        animation: slideIn 1s;
+      }
+      .card {
+        background-color: #00dbde;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px 0;
+        padding: 20px;
+        transition: transform 0.2s;
+      }
+      .card:hover {
+        transform: scale(1.05);
+      }
+      .price {
+        font-size: 24px;
+        color: #000;
+        font-weight: bold;
+      }
+      button {
+        background-color: #0c0e0c;
+        color: #fff;
+        border: none;
+        padding: 15px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.1s;
+      }
+      button:hover {
+        background-color: #141414;
+      }
+      footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #236c4f;
+        color: #0e0e0e;
+        position: relative;
+        bottom: 0;
+        width: 100%;
+      }
+      img {
+        width: 100%;
+        border-radius: 10px;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes slideIn {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      .form-container {
+        margin-top: 20px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .form-container input, .form-container select {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      .registration-list {
+        margin-top: 20px;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      .error {
+        color: red;
+        font-size: 14px;
+      }
+      .registration-item {
+        display: flex;
+        justify-content: space-between;
+        margin: 5px 0;
+      }
+      .registration-item button {
+        background-color: red;
+      }
+      .registration-item button:hover {
+        background-color: darkred;
+      }
+      .filter-container {
+        margin: 20px 0;
+        display: flex;
+        justify-content: space-between;
+      }
+      .filter-container select {
+        width: 48%;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1><strong>Pendaftaran Hewan Kurban</strong></h1>
+      <p><strong>Daftar hewan kurban Anda dengan mudah dan cepat!</strong></p>
+    </header>
+
+    <div class="container">
+      <div class="card">
+        <h2>Sapi Kurban</h2>
+        <img src="https://images.pexels.com/photos/2600277/pexels-photo-2600277.jpeg" alt="Sapi Kurban" />
+        <p>Berat: 100 kg</p>
+        <p class="price">Harga: Rp 30.000.000</p>
+        <button onclick="showForm('sapi')">Daftar Sapi</button>
+      </div>
+
+      <div class="card">
+        <h2>Kambing Kurban</h2>
+        <img src="https://images.pexels.com/photos/29126725/pexels-photo-29126725.jpeg" alt="Kambing Kurban" />
+        <p>Berat: 20 kg</p>
+        <p class="price">Harga: Rp 15.000.000</p>
+        <button onclick="showForm('kambing')">Daftar Kambing</button>
+      </div>
+
+      <div class="form-container" id="form-container" style="display: none;">
+        <h2>Pendaftaran Hewan Kurban</h2>
+        <form id="registration-form">
+          <input type="text" id="name" placeholder="Nama Anda" required />
+          <span class="error" id="name-error"></span>
+          <input type="text" id="phone" placeholder="Nomor Telepon" required />
+          <span class="error" id="phone-error"></span>
+          <select id="animal" required>
+            <option value="">Pilih Hewan</option>
+            <option value="sapi">Sapi Kurban</option>
+            <option value="kambing">Kambing Kurban</option>
+          </select>
+          <button type="submit">Kirim Pendaftaran</button>
+        </form>
+      </div>
+
+      <div class="filter-container">
+        <select id="filter">
+          <option value="">Semua Pendaftaran</option>
+          <option value="sapi">Sapi Kurban</option>
+          <option value="kambing">Kambing Kurban</option>
+        </select>
+        <button onclick="resetRegistrations()">Hapus Semua</button>
+      </div>
+
+      <div class="registration-list" id="registration-list" style="display: none;">
+        <h2>Daftar Pendaftaran</h2>
+        <ul id="list"></ul>
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; Selamat Hari Raya Qurban 2024.</p>
+    </footer>
+
+    <script>
+      const registrations = JSON.parse(localStorage.getItem('registrations')) || [];
+
+      function showForm(animal) {
+        document.getElementById('form-container').style.display = 'block';
+        document.getElementById('animal').value = animal;
+      }
+
+      document.getElementById('registration-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const animal = document.getElementById('animal').value;
+
+        // Validasi input
+        let valid = true;
+        document.getElementById('name-error').textContent = '';
+        document.getElementById('phone-error').textContent = '';
+
+        if (name === '') {
+          document.getElementById('name-error').textContent = 'Nama harus diisi.';
+          valid = false;
+        }
+        if (phone === '') {
+          document.getElementById('phone-error').textContent = 'Nomor telepon harus diisi.';
+          valid = false;
+        }
+
+        if (!valid) return;
+
+        registrations.push({ name, phone, animal });
+        localStorage.setItem('registrations', JSON.stringify(registrations));
+
+        alert(`Terima kasih, ${name}! Anda telah mendaftar untuk ${animal}.`);
+        document.getElementById('registration-form').reset();
+        document.getElementById('form-container').style.display = 'none';
+        displayRegistrations();
+      });
+
+      function displayRegistrations() {
+        const list = document.getElementById('list');
+        const filterValue = document.getElementById('filter').value;
+        list.innerHTML = '';
+        
+        const filteredRegistrations = filterValue 
+          ? registrations.filter(reg => reg.animal === filterValue)
+          : registrations;
+
+        filteredRegistrations.forEach((registration, index) => {
+          const li = document.createElement('li');
+          li.className = 'registration-item';
+          li.textContent = `${registration.name} - ${registration.phone} - ${registration.animal}`;
+          
+          const deleteButton = document.createElement('button');
+          deleteButton.textContent = 'Hapus';
+          deleteButton.onclick = () => {
+            if (confirm('Apakah Anda yakin ingin menghapus pendaftaran ini?')) {
+              registrations.splice(index, 1);
+              localStorage.setItem('registrations', JSON.stringify(registrations));
+              displayRegistrations();
+            }
+          };
+          
+          li.appendChild(deleteButton);
+          list.appendChild(li);
+        });
+        
+        document.getElementById('registration-list').style.display = filteredRegistrations.length > 0 ? 'block' : 'none';
+      }
+
+      document.getElementById('filter').addEventListener('change', displayRegistrations);
+
+      function resetRegistrations() {
+        if (confirm('Apakah Anda yakin ingin menghapus semua pendaftaran?')) {
+          localStorage.removeItem('registrations');
+          registrations.length = 0; // Kosongkan array
+          displayRegistrations();
+        }
+      }
+
+      // Tampilkan daftar pendaftaran saat halaman dimuat
+      window.onload = displayRegistrations;
+    </script>
+  </body>
+</html>
